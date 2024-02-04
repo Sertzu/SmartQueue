@@ -28,8 +28,16 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-# Now simply link your own tests against gtest & gtest_main
-add_executable(testBase testBase.cpp)
-target_link_libraries(testBase gtest gtest_main SmartQueue)
+# Automatically add tests for each .cpp file found in the tests directory
+file(GLOB TEST_SOURCES *.cpp)
+foreach(testSrc ${TEST_SOURCES})
+    # Get a nice name for each test executable (removing the path and extension)
+    get_filename_component(testName ${testSrc} NAME_WE)
 
-add_test(NAME testBase COMMAND testBase)
+    # Add executable for the test
+    add_executable(${testName} ${testSrc})
+    target_link_libraries(${testName} gtest gtest_main SmartQueue)
+
+    # Add the test so it can be run with `ctest`
+    add_test(NAME ${testName} COMMAND ${testName})
+endforeach(testSrc)
