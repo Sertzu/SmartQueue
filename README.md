@@ -1,3 +1,3 @@
 # SmartQueue
 
-A wrapper for std::queue to make it thread safe.
+A very basic single header file wrapper for std::queue to make it thread safe.
