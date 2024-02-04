@@ -2,7 +2,7 @@
 #include <thread>
 #include <vector>
 
-#include "SmartQueue.h" // Make sure to include your SmartQueue class definition
+#include "SmartQueue.h"
 
 // Test 1: Enqueue and Dequeue Operations
 TEST(SmartQueueTest, EnqueueDequeue) {
@@ -46,7 +46,7 @@ TEST(SmartQueueTest, ThreadSafety) {
     for (int i = 0; i < numThreads; ++i) {
         consumers.emplace_back([&]() {
             for (int j = 0; j < numIterations; ++j) {
-                auto value = queue.dequeue(); // Not using the value here
+                auto value = queue.dequeue();
             }
         });
     }

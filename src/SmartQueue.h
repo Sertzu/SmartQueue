@@ -14,37 +14,36 @@ public:
     SmartQueue() = default;
     ~SmartQueue() = default;
 
-    // Delete copy constructor and copy assignment operator
     SmartQueue(const SmartQueue&) = delete;
     SmartQueue& operator=(const SmartQueue&) = delete;
 
     // Add an item to the queue and notify one waiting thread
     void enqueue(T item) {
         {
-            std::lock_guard<std::mutex> lock(mutex); // Lock the mutex during operation
+            std::lock_guard<std::mutex> lock(mutex);
             queue.push(std::move(item));
-        } // Unlock mutex automatically
-        notEmpty.notify_one(); // Notify one waiting thread
+        }
+        notEmpty.notify_one();
     }
 
     // Try to dequeue an item from the queue. Returns nullopt if the queue is empty
     std::optional<T> tryDequeue() {
-        std::lock_guard<std::mutex> lock(mutex); // Lock the mutex during operation
+        std::lock_guard<std::mutex> lock(mutex);
         if (queue.empty()) {
-            return std::nullopt; // Return nullopt if the queue is empty
+            return std::nullopt;
         }
         T value = std::move(queue.front());
         queue.pop();
-        return value; // Return the dequeued value
+        return value;
     }
 
     // Dequeue an item from the queue. Blocks if the queue is empty until an item is enqueued
     T dequeue() {
-        std::unique_lock<std::mutex> lock(mutex); // Lock the mutex during operation
-        notEmpty.wait(lock, [this]{ return !queue.empty(); }); // Wait until the queue is not empty
+        std::unique_lock<std::mutex> lock(mutex);
+        notEmpty.wait(lock, [this]{ return !queue.empty(); });
         T value = std::move(queue.front());
         queue.pop();
-        return value; // Return the dequeued value
+        return value;
     }
 
     // Check if the queue is empty. Note: This status could change immediately after this check.
